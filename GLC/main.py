@@ -1,4 +1,5 @@
 from parser1 import parser
+from lexer import lexer
 
 
 # Função para analisar uma sentença de entrada
@@ -24,8 +25,17 @@ while(cont < 10) {
     cont = cont + 1
 }
 '''
+input_string = "var x, y; x = 5; while (x > 0) { x = x - 1; }"
+lexer.input(input_string)
+result = parse(input_string)
+print(result)
 
-parse(input_string)
+if result is not None:
+    print('Análise bem sucedida')
+else:
+    print('Análise não foi bem sucedida')
+
+# parse(input_string)
 
 # Adicionar uma nova linha vazia no final do arquivo
 print()

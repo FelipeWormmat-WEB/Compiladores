@@ -1,5 +1,4 @@
 import ply.lex as lex
-import ply.yacc as yacc
 
 # Definição dos tokens
 tokens = (
@@ -53,9 +52,6 @@ t_WHILE = r'while'
 t_LBRACE = r'\{'
 t_RBRACE = r'\}'
 
-# Regra para ignorar espaços em branco e quebras de linha
-t_ignore = ' \n\t'
-
 
 # Expressões regulares com ações
 def t_IDENTIFIER(t):
@@ -97,16 +93,3 @@ def t_error(t):
 
 
 lexer = lex.lex()
-
-
-# Função para realizar a análise sintática
-def parse(input_string):
-    parser = yacc.yacc()
-    result = parser.parse(input_string)
-    return result
-
-
-# Exemplo de uso
-input_string = "var x, y; x = 5; while (x > 0) { x = x - 1; }"
-result = parse(input_string)
-print(result)
