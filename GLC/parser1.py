@@ -54,37 +54,53 @@ def p_variable(p):
 
 
 def p_assignment(p):
-    'assignment : variable EQUAL expression'
+    '''statement : assignment
+       statement : conditional
+    '''
     p[0] = (p[1], p[3])
 
 
 def p_expression(p):
-    '''expression : expression PLUS expression
-                  | expression MINUS expression'''
-    if len(p) == 2:
+    '''expression : expression PLUS term
+       expression : expression MINUS term
+       expression : term
+       '''
+    if len(p) <= 2:
         p[0] = p[1]
-    elif len(p) == 4:
-        if p[2] == '+':
-            p[0] = p[1] + p[3]
-        elif p[2] == '-':
-            p[0] = p[1] - p[3]
+        return
+    p[0] = geraTemp()
+    print(p[0], "=", p[1], p[2], p[3])
 
 
 def p_term(p):
     '''term : term MULTIPLY factor
-            | term DIVIDE factor'''
-    if len(p) == 2:
+        term: term DIVIDE factor
+        term: factor
+        '''
+    if len(p) <= 2:
         p[0] = p[1]
-    elif len(p) == 4:
-        if p[2] == '*':
-            p[0] = p[1] * p[3]
-        elif p[2] == '/':
-            p[0] = p[1] / p[3]
+        return
+    p[0] = geraTemp()
+    print(p[0], "=", p[1], p[2], p[3])
+
+
+def geraTemp(p):
+    global cont
+    cont += 1
+    return "T" + str(cont)
+
+
+def geraLabel(p):
+    global cont1
+    cont1 += 1
+    return "T" + str(cont1)
 
 
 def p_factor(p):
     '''factor : NUMBER
-              | LPAREN expression RPAREN'''
+       factor: IDENTIFIER
+       factor: LPAREN expression RPAREN
+       '''
     if len(p) == 2:
         p[0] = p[1]
     elif len(p) == 4:
@@ -115,12 +131,24 @@ def p_conditional(p):
     '''conditional : IF LPAREN expression RPAREN LBRACE statement RBRACE \
                    | ELSE LBRACE statement RBRACE
     '''
+    p[0] = geraLabel()
     print("p_conditional")
     if len(p) == 8:
         p[0] = ('conditional', p[3], p[6], None)
     else:
         p[0] = ('conditional', p[3], p[6], p[10])
 
+
+def p_expression_relational(p):
+    '''expression : expression LESSTHAN expression
+       expression : expression LESSEQUAL expression
+       expression : expression GREATERTHAN expression
+       expression : expression GREATEREQUAL expression
+       expression : expression EQUAL expression
+       expression : expression NOTEQUAL expression
+    '''
+    p[0] = 'if {} {} {} goto {}'.format(p[1], p[2], p[3], p[0])
+    
 
 def p_error(p):
     if p:
@@ -131,3 +159,5 @@ def p_error(p):
 
 
 parser = yacc.yacc()
+cont = 0
+cont1 = 0
