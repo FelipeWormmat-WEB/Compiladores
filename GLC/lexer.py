@@ -22,12 +22,15 @@ tokens = (
     'COMMA',
     'SEMICOLON',
     'VAR',
-    'IF',
-    'ELSE',
-    'WHILE',
     'LBRACE',
     'RBRACE'
 )
+
+reserved = {
+    'if': 'IF',
+    'else': 'ELSE',
+    'while': 'WHILE'
+}
 
 # Expressões regulares para os tokens
 t_PLUS = r'\+'
@@ -46,9 +49,6 @@ t_NOTEQUAL = r'<>'
 t_COMMA = r','
 t_SEMICOLON = r';'
 t_VAR = r'var'
-t_IF = r'if'
-t_ELSE = r'else'
-t_WHILE = r'while'
 t_LBRACE = r'\{'
 t_RBRACE = r'\}'
 
@@ -56,6 +56,7 @@ t_RBRACE = r'\}'
 # Expressões regulares com ações
 def t_IDENTIFIER(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value, 'IDENTIFIER')
     return t
 
 
