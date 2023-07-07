@@ -1,0 +1,98 @@
+Construir um tradutor de código intermediário para uma linguagem hipotética, exemplificada a seguir:
+
+ var
+    int cont, num;
+    real cont2;
+
+ num = 0;
+ while(cont < 10) {
+    cont2 = 3.1415 * contador ^ 2;
+    if (cont < 5) {
+       num = num + cont2;
+    }
+    else {
+       cont = 0;
+    }
+       cont = cont + 1
+ }
+O tradutor deve gerar código de três endereços como o exemplo abaixo:
+
+	num = 0
+WHILE3:
+	IF cont>=10 GOTO END4
+	T1 = contador^2
+	T2 = 3.1415*T1
+	num = T2
+	IF cont>=5 GOTO ELSE2
+	T3 = num+cont2
+	num = T3
+	GOTO END1
+ELSE2:
+	cont = 0
+END1:
+	T4 = cont+1
+	cont = T4
+	GOTO WHILE3
+END4:
+
+
+Deve reconhecer:
+
+Expressões aritméticas binárias: x + y, x – y, x / y, x * y, x ^ y, etc.
+
+Expressões aritméticas com parênteses balanceados: (x + y), x * (y+z), (x / (y-z)), etc.
+
+Expressões relacionais: (x > y), x <= (y+z), (x <> (y-z)), etc.
+
+Declaração de variáveis: int x, y | real s | etc.
+
+Comando de Atribuição simples: a = b, a = expr + 78.
+
+Comando de Repetição: while ( a > b ) { comandos }.
+
+Comando de Fluxo de controle: if ( a > b ) { comandos } else {comandos}.
+
+Exibir mensagem de erro adequada ao contexto quando a sentença de entrada não estiver de acordo com a gramática.
+
+A entrada pode ser via dispositivo ou por arquivos. Poderá ter, ou não, uma interface de entrada e manipulação.
+
+Exemplo de GLC de referência:
+
+
+PROG -> var D_VAR COM_L
+	| COM_L
+
+D_VAR -> VAR D_VAR
+	| VAR
+
+VAR -> TIPO id VAR_I
+VAR_I -> , id VAR_I | ;
+TIPO -> real | int
+
+EXP_R -> EXP EXP_I
+EXP_I ->  == EXP
+	| <> EXP
+	| < EXP
+	| > EXP
+	| <= EXP
+	| >= EXP
+
+COM_L -> COM COM_L
+	| COM
+
+COM   -> C_WHILE
+	|C_IF
+	|C_ATR
+
+C_WHILE -> while ( EXP_R ) { COM_L }
+C_IF 	-> if ( EXP_R ) { COM_L } C_ELSE
+C_ELSE 	-> else { COM_L } | ∈
+C_ATR	-> VAR_IND = EXP ;
+
+EXP	-> TERM EXPL
+EXPL	-> + TERM EXPL | - TERM EXPL | ∈
+TERM	-> FATOR TERML
+TERML	-> * FATOR TERML | / FATOR TERML | ∈
+FATOR	-> VAL FATORL
+FATORL	-> ^ VAL | ∈
+VAL	-> ( EXP ) | id | num

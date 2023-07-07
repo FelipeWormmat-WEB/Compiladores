@@ -2,6 +2,10 @@ import ply.yacc as yacc
 from lexer import tokens
 import lexer
 
+intermediate_code = []
+temp_count = 1
+label_count = 1
+
 
 # Definição das regras de produção
 def p_program(p):
@@ -58,6 +62,7 @@ def p_assignment(p):
        statement : conditional
     '''
     p[0] = (p[1], p[3])
+    intermediate_code.append(p[0])
 
 
 def p_expression(p):
@@ -139,6 +144,16 @@ def p_conditional(p):
         p[0] = ('conditional', p[3], p[6], p[10])
 
 
+def p_expression_binop(p):
+    '''expression : expression PLUS expression
+                  | expression MINUS expression
+                  | expression MULTIPLY expression
+                  | expression DIVIDE expression
+                  | expression POWER expression'''
+    p[0] = f"t{temp_count}"
+    intermediate_code.append(f"{p[0]} = {p[1]} {p[2]} {p[3]};")
+
+
 def p_expression_relational(p):
     '''expression : expression LESSTHAN expression
        expression : expression LESSEQUAL expression
@@ -147,8 +162,26 @@ def p_expression_relational(p):
        expression : expression EQUAL expression
        expression : expression NOTEQUAL expression
     '''
-    p[0] = 'if {} {} {} goto {}'.format(p[1], p[2], p[3], p[0])
+    p[0] = f"t{temp_count}"
+    intermediate_code.append(f"{p[0]} = {p[1]} {p[2]} {p[3]};")
     
+
+def p_looping(p):
+    'loop : WHILE LPAREN expression RPAREN LBRACE COM_L RBRACE'
+    global label_count
+    label_start = f"WHILE{label_count}:"
+    label_end = f"END{label_count}:"
+    label_count += 1
+
+    intermediate_code.append(label_start)
+    intermediate_code.append(f"IF {p[3]} GOTO {label_end}")
+
+    for statement in p[6]:
+        intermediate_code.append(statement)
+
+    intermediate_code.append(f"GOTO {label_start}")
+    intermediate_code.append(label_end)
+
 
 def p_error(p):
     if p:
