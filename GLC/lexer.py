@@ -23,7 +23,8 @@ tokens = (
     'SEMICOLON',
     'VAR',
     'LBRACE',
-    'RBRACE'
+    'RBRACE',
+    'ASSIGN'
 )
 
 reserved = {
@@ -51,6 +52,7 @@ t_SEMICOLON = r';'
 t_VAR = r'var'
 t_LBRACE = r'\{'
 t_RBRACE = r'\}'
+t_ASSIGN = r'='
 
 
 # Expressões regulares com ações
