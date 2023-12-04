@@ -2,10 +2,11 @@ import ply.lex as lex
 
 # Definição dos tokens
 tokens = (
-    'INT',
-    'REAL',
+    'INT_TYPE',
+    'REAL_TYPE',
     'IDENTIFIER',
-    'NUMBER',
+    'NUM_INT',
+    'NUM_REAL',
     'PLUS',
     'MINUS',
     'MULTIPLY',
@@ -24,13 +25,23 @@ tokens = (
     'VAR',
     'LBRACE',
     'RBRACE',
-    'ASSIGN'
+    'ASSIGN',
+    'IF',
+    'ELSE',
+    'WHILE',
+    'TRUE',
+    'FALSE'
 )
 
 reserved = {
     'if': 'IF',
     'else': 'ELSE',
-    'while': 'WHILE'
+    'while': 'WHILE',
+    'var': 'VAR',
+    'int': 'INT_TYPE',
+    'real': 'REAL_TYPE',
+    'true': 'TRUE',
+    'false': 'FALSE',
 }
 
 # Expressões regulares para os tokens
@@ -46,13 +57,19 @@ t_LESSEQUAL = r'<='
 t_GREATERTHAN = r'>'
 t_GREATEREQUAL = r'>='
 t_EQUAL = r'=='
-t_NOTEQUAL = r'<>'
+t_NOTEQUAL = r'!='
 t_COMMA = r','
 t_SEMICOLON = r';'
 t_VAR = r'var'
 t_LBRACE = r'\{'
 t_RBRACE = r'\}'
 t_ASSIGN = r'='
+
+# Ignorar espaços em branco e tabulações
+t_ignore = ' \t'
+
+# Ignorar comentários
+t_ignore_COMMENT = r'\#.*'
 
 
 # Expressões regulares com ações
@@ -62,28 +79,19 @@ def t_IDENTIFIER(t):
     return t
 
 
-def t_REAL(t):
+def t_NUM_REAL(t):
     r'\d+\.\d+'
     t.value = float(t.value)
     return t
 
 
-def t_INT(t):
+def t_NUM_INT(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
 
-def t_NUMBER(t):
-    r'\d+(\.\d+)?'
-    t.value = float(t.value) if '.' in t.value else int(t.value)
-    return t
-
-
-# Ignorar espaços em branco e tabulações
-t_ignore = ' \t'
-
-
+# Tratamento de quebras de linha
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
@@ -96,3 +104,26 @@ def t_error(t):
 
 
 lexer = lex.lex()
+
+
+# Função principal (Main)
+def main():
+    lexer.input("var int a,b; if(a>0){a=34/(3.4+5)}")
+
+    # Lista de lexemas e tokens
+    lexemes_tokens = []
+
+    # Tokenize
+    while True:
+        tok = lexer.token()
+        if not tok:
+            break
+        lexemes_tokens.append((tok.value, tok.type))
+
+    # Imprimir resultado
+    for lexeme, token in lexemes_tokens:
+        print(f"'{lexeme}' → {token}")
+
+
+if __name__ == "__main__":
+    main()

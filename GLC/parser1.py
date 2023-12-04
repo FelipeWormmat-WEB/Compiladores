@@ -89,13 +89,13 @@ def p_term(p):
     print(p[0], "=", p[1], p[2], p[3])
 
 
-def geraTemp(p):
+def geraTemp():
     global cont
     cont += 1
     return "T" + str(cont)
 
 
-def geraLabel(p):
+def geraLabel():
     global cont1
     cont1 += 1
     return "T" + str(cont1)
@@ -103,8 +103,8 @@ def geraLabel(p):
 
 def p_factor(p):
     '''factor : NUMBER
-       factor: IDENTIFIER
-       factor: LPAREN expression RPAREN
+       factor : IDENTIFIER
+       factor : LPAREN expression RPAREN
        '''
     if len(p) == 2:
         p[0] = p[1]
@@ -164,7 +164,7 @@ def p_expression_relational(p):
     '''
     p[0] = f"t{temp_count}"
     intermediate_code.append(f"{p[0]} = {p[1]} {p[2]} {p[3]};")
-    
+
 
 def p_looping(p):
     'loop : WHILE LPAREN expression RPAREN LBRACE COM_L RBRACE'
